@@ -11,13 +11,14 @@ app = FastAPI(title="VocaCare Backend API", version="1.0.0")
 # CORS Configuration - Allow frontend to access the API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "https://major-4w34.onrender.com",
-        "https://major-nine-gamma.vercel.app"
-    ],
+    allow_origins=["*"],  # Allow all origins for development/testing
+    # For production, use specific origins:
+    # allow_origins=[
+    #     "http://localhost:5173",
+    #     "http://localhost:3000",
+    #     "https://major-4w34.onrender.com",
+    #     "https://major-nine-gamma.vercel.app"
+    # ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
