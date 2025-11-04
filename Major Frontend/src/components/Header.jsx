@@ -1,7 +1,19 @@
 import React from "react";
-import { RefreshCw, Loader, CheckCircle, XCircle } from "lucide-react";
+import {
+  RefreshCw,
+  Loader,
+  CheckCircle,
+  XCircle,
+  Download,
+} from "lucide-react";
 
-const Header = ({ isPolling, togglePolling, loadSampleData, dbStatus }) => {
+const Header = ({
+  isPolling,
+  togglePolling,
+  loadSampleData,
+  downloadPatientsData,
+  dbStatus,
+}) => {
   return (
     <div className="bg-white rounded-xl shadow-xl p-6 mb-6 border border-gray-100">
       <div className="flex items-center justify-between">
@@ -31,6 +43,14 @@ const Header = ({ isPolling, togglePolling, loadSampleData, dbStatus }) => {
           >
             Test Sample Data
           </button>
+          <button
+            onClick={downloadPatientsData}
+            className="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors font-medium flex items-center gap-2"
+            title="Download all patient records as CSV"
+          >
+            <Download size={18} />
+            Download Data
+          </button>
           {dbStatus !== "idle" && (
             <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-lg">
               {dbStatus === "saving" && (
@@ -41,11 +61,19 @@ const Header = ({ isPolling, togglePolling, loadSampleData, dbStatus }) => {
                   </span>
                 </>
               )}
+              {dbStatus === "loading" && (
+                <>
+                  <Loader className="animate-spin text-purple-500" size={18} />
+                  <span className="text-sm text-gray-700 font-medium">
+                    Loading...
+                  </span>
+                </>
+              )}
               {dbStatus === "success" && (
                 <>
                   <CheckCircle className="text-green-500" size={18} />
                   <span className="text-sm text-green-600 font-medium">
-                    Saved to DB
+                    Success!
                   </span>
                 </>
               )}
@@ -53,7 +81,7 @@ const Header = ({ isPolling, togglePolling, loadSampleData, dbStatus }) => {
                 <>
                   <XCircle className="text-red-500" size={18} />
                   <span className="text-sm text-red-600 font-medium">
-                    Save Failed
+                    Failed
                   </span>
                 </>
               )}

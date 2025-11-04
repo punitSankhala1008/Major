@@ -133,6 +133,97 @@ function App() {
     setIsPolling(!isPolling);
   };
 
+  // Download all patients data from database
+  const downloadPatientsData = async () => {
+    try {
+      setDbStatus("loading");
+      const response = await fetch(
+        `${API_CONFIG.baseUrl}/api/patients?limit=1000`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch patient data");
+      }
+
+      const data = await response.json();
+
+      // Backend returns { patients: [...] }, extract the array
+      const patients = data.patients || [];
+
+      if (!patients || patients.length === 0) {
+        alert("No patient data available to download");
+        setDbStatus("idle");
+        return;
+      }
+
+      // Convert to CSV format
+      const headers = [
+        "Name",
+        "Age",
+        "Gender",
+        "Contact",
+        "Address",
+        "Reason for Visit",
+        "Preferred Doctor",
+        "Medical History",
+        "Emergency Contact",
+        "Appointment Preference",
+        "Conversation ID",
+        "Created At",
+        "Status",
+      ];
+
+      const csvRows = [];
+      csvRows.push(headers.join(","));
+
+      patients.forEach((patient) => {
+        const row = [
+          patient.name || "",
+          patient.age || "",
+          patient.gender || "",
+          patient.contact || "",
+          patient.address || "",
+          patient.reason || "",
+          patient.preferredDoctor || "",
+          patient.medicalHistory || "",
+          patient.emergencyContact || "",
+          patient.appointmentPreference || "",
+          patient.conversationId || "",
+          patient.createdAt ? new Date(patient.createdAt).toLocaleString() : "",
+          patient.status || "",
+        ].map((field) => `"${String(field).replace(/"/g, '""')}"`); // Escape quotes
+
+        csvRows.push(row.join(","));
+      });
+
+      const csvContent = csvRows.join("\n");
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `VocaCare_Patients_${new Date().toISOString().split("T")[0]}.csv`
+      );
+      link.style.visibility = "hidden";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      setDbStatus("success");
+      setTimeout(() => setDbStatus("idle"), 2000);
+    } catch (error) {
+      console.error("Download error:", error);
+      alert("Failed to download patient data. Please try again.");
+      setDbStatus("error");
+      setTimeout(() => setDbStatus("idle"), 2000);
+    }
+  };
+
   // Load sample data for testing
   const loadSampleData = () => {
     const sampleWebhookData = {
@@ -178,6 +269,7 @@ function App() {
           isPolling={isPolling}
           togglePolling={togglePolling}
           loadSampleData={loadSampleData}
+          downloadPatientsData={downloadPatientsData}
           dbStatus={dbStatus}
         />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
