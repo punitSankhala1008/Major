@@ -14,6 +14,11 @@ http://localhost:8000
 https://major-4w34.onrender.com
 ```
 
+**Frontend URLs:**
+
+- **Local:** http://localhost:5173
+- **Production (Vercel):** https://major-nine-gamma.vercel.app
+
 ---
 
 ## 1. Health Check

@@ -241,7 +241,6 @@ function App() {
           loadSampleData={loadSampleData}
           dbStatus={dbStatus}
         />
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Status Panel */}
           <div className="lg:col-span-1">
@@ -263,11 +262,10 @@ function App() {
             />
           </div>
         </div>
-
-        {/* Setup Instructions
+        Setup Instructions
         <div className="mt-6">
           <SetupInstructions />
-        </div> */}
+        </div>
       </div>
     </div>
   );

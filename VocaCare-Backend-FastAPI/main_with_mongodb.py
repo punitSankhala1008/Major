@@ -21,7 +21,13 @@ app = FastAPI(title="VocaCare Backend API with MongoDB", version="1.0.0")
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000","https://major-4w34.onrender.com/", "https://major-nine-gamma.vercel.app/").split(","),
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://localhost:8000",
+        "https://major-4w34.onrender.com",
+        "https://major-nine-gamma.vercel.app"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
