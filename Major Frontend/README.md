@@ -1,3 +1,88 @@
+# VocaCare Frontend
+
+AI-Powered Patient Registration System with Real-time Updates
+
+## Quick Start
+
+### 1. Install Dependencies
+
+```bash
+npm install
+```
+
+### 2. Environment Configuration
+
+Create a `.env` file in the root directory:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and configure your backend API URL:
+
+```env
+VITE_API_BASE_URL=https://major-4w34.onrender.com
+```
+
+For local development:
+
+```env
+VITE_API_BASE_URL=http://localhost:8000
+```
+
+### 3. Run Development Server
+
+```bash
+npm run dev
+```
+
+### 4. Build for Production
+
+```bash
+npm run build
+```
+
+## Environment Variables
+
+| Variable            | Description          | Default                           |
+| ------------------- | -------------------- | --------------------------------- |
+| `VITE_API_BASE_URL` | Backend API base URL | `https://major-4w34.onrender.com` |
+
+**Note**: All Vite environment variables must be prefixed with `VITE_` to be accessible in the application.
+
+## Features
+
+- 🎤 ElevenLabs Voice Agent Integration
+- 📊 Real-time Patient Data Polling
+- 💾 MongoDB Database Integration
+- 📥 CSV Export Functionality
+- 🔄 Auto-save Patient Records
+- 📱 Responsive Design
+
+## Project Structure
+
+```
+src/
+├── App.jsx              # Main application component
+├── components/
+│   ├── Header.jsx       # Header with controls
+│   ├── StatusPanel.jsx  # System status display
+│   ├── PatientInfo.jsx  # Patient data grid
+│   ├── InfoField.jsx    # Reusable field component
+│   └── SetupInstructions.jsx
+├── assets/              # Static assets
+└── index.css           # Global styles
+```
+
+## Tech Stack
+
+- **React 19.1.1** - UI Framework
+- **Vite 7.1.12** - Build Tool
+- **Tailwind CSS** - Styling
+- **Lucide React** - Icons
+
+---
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.

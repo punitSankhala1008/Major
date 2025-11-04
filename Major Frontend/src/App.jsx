@@ -26,7 +26,8 @@ function App() {
 
   // Backend API Configuration
   const API_CONFIG = {
-    baseUrl: "https://major-4w34.onrender.com",
+    baseUrl:
+      import.meta.env.VITE_API_BASE_URL || "https://major-4w34.onrender.com",
     pollingInterval: 2000, // Poll every 2 seconds
   };
 
