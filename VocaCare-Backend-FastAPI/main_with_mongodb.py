@@ -12,6 +12,7 @@ from typing import Optional, List
 import uvicorn
 import os
 from dotenv import load_dotenv
+from database import patient_registrations
 
 # Load environment variables
 load_dotenv()
@@ -34,7 +35,7 @@ app.add_middleware(
 )
 
 # MongoDB Configuration
-MONGODB_URI = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+MONGODB_URI = os.getenv("MONGO_DB_URI", "mongodb://localhost:27017")
 MONGODB_DATABASE = os.getenv("MONGODB_DATABASE", "medical_records")
 MONGODB_COLLECTION = os.getenv("MONGODB_COLLECTION", "patient_registrations")
 

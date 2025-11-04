@@ -26,7 +26,8 @@ function App() {
 
   // MongoDB Configuration
   const MONGODB_CONFIG = {
-    apiUrl: "YOUR_MONGODB_DATA_API_ENDPOINT",
+    apiUrl:
+      "mongodb+srv://sankhalapunit10:Punit123@company.bnxmedc.mongodb.net/",
     apiKey: "YOUR_MONGODB_API_KEY",
     database: "medical_records",
     collection: "patient_registrations",

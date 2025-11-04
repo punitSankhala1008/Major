@@ -4,7 +4,7 @@ from datetime import datetime
 import uvicorn
 from typing import Optional
 from dotenv import load_dotenv
-
+from database import patient_registrations
 load_dotenv()
 app = FastAPI(title="VocaCare Backend API", version="1.0.0")
 
@@ -58,6 +58,38 @@ async def receive_webhook(request: Request):
         print(f"✅ Received webhook data at {datetime.now()}")
         print(f"Conversation ID: {payload.get('data', {}).get('conversation_id', 'N/A')}")
         
+        # Extract and save patient data to MongoDB
+        if payload.get('data', {}).get('analysis', {}).get('data_collection_results'):
+            try:
+                results = payload['data']['analysis']['data_collection_results']
+                
+                patient_record = {
+                    "name": results.get('Name', {}).get('value', ''),
+                    "age": results.get('Age', {}).get('value', ''),
+                    "gender": results.get('Gender', {}).get('value', ''),
+                    "contact": results.get('Contact', {}).get('value', ''),
+                    "address": results.get('Address ', {}).get('value', ''),
+                    "reason": results.get('Reason', {}).get('value', ''),
+                    "preferredDoctor": results.get('Preferred Doctor', {}).get('value', ''),
+                    "medicalHistory": results.get('Previous Medical History', {}).get('value', ''),
+                    "emergencyContact": results.get('Emergency Contact', {}).get('value', ''),
+                    "appointmentPreference": results.get('Appointment Preference', {}).get('value', ''),
+                    "conversationId": payload['data'].get('conversation_id'),
+                    "transcript": payload['data'].get('transcript', []),
+                    "transcriptSummary": payload['data'].get('analysis', {}).get('transcript_summary', ''),
+                    "callDuration": payload['data'].get('metadata', {}).get('call_duration_secs'),
+                    "createdAt": datetime.now(),
+                    "status": "completed"
+                }
+                
+                # Save to MongoDB
+                result = await patient_registrations.insert_one(patient_record)
+                print(f"💾 Saved to MongoDB with ID: {result.inserted_id}")
+                
+            except Exception as db_error:
+                print(f"⚠️ MongoDB save failed: {db_error}")
+                print("📝 Continuing without database save...")
+        
         return {"status": "success", "message": "Webhook received"}
     
     except Exception as e:
@@ -94,6 +126,72 @@ async def webhook_status():
         "has_data": latest_webhook_data is not None,
         "last_update": latest_webhook_data.get("timestamp") if latest_webhook_data else None
     }
+
+
+@app.get("/api/patients")
+async def get_all_patients(limit: int = 50):
+    """Get all patient records from MongoDB"""
+    try:
+        patients = []
+        async for patient in patient_registrations.find().sort("createdAt", -1).limit(limit):
+            patient['_id'] = str(patient['_id'])  # Convert ObjectId to string
+            patients.append(patient)
+        
+        return {
+            "status": "success",
+            "count": len(patients),
+            "patients": patients
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Database error: {str(e)}",
+            "patients": []
+        }
+
+
+@app.get("/api/patients/{conversation_id}")
+async def get_patient_by_id(conversation_id: str):
+    """Get specific patient record by conversation ID"""
+    try:
+        patient = await patient_registrations.find_one({"conversationId": conversation_id})
+        if patient:
+            patient['_id'] = str(patient['_id'])
+            return {
+                "status": "success",
+                "patient": patient
+            }
+        else:
+            return {
+                "status": "not_found",
+                "message": "Patient not found"
+            }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Database error: {str(e)}"
+        }
+
+
+@app.get("/api/stats")
+async def get_stats():
+    """Get database statistics"""
+    try:
+        total = await patient_registrations.count_documents({})
+        
+        return {
+            "status": "success",
+            "database": "connected",
+            "total_patients": total,
+            "collection": "patient_registrations"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "database": "disconnected",
+            "total_patients": 0,
+            "message": str(e)
+        }
 
 
 if __name__ == "__main__":

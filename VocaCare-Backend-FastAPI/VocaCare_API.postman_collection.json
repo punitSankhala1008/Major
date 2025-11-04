@@ -1,7 +1,7 @@
 {
   "info": {
     "name": "VocaCare API",
-    "description": "API collection for VocaCare - AI-Powered Patient Registration System",
+    "description": "API collection for VocaCare - AI-Powered Patient Registration System with MongoDB Integration",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -13,6 +13,11 @@
     {
       "key": "base_url_production",
       "value": "https://major-4w34.onrender.com",
+      "type": "string"
+    },
+    {
+      "key": "sample_conversation_id",
+      "value": "test_conv_1762290370",
       "type": "string"
     }
   ],
@@ -28,6 +33,52 @@
           "path": [""]
         },
         "description": "Check if the API server is running"
+      }
+    },
+    {
+      "name": "Database Stats",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url_local}}/api/stats",
+          "host": ["{{base_url_local}}"],
+          "path": ["api", "stats"]
+        },
+        "description": "Get database statistics including total patient count"
+      }
+    },
+    {
+      "name": "Get All Patients",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url_local}}/api/patients?limit=50",
+          "host": ["{{base_url_local}}"],
+          "path": ["api", "patients"],
+          "query": [
+            {
+              "key": "limit",
+              "value": "50",
+              "description": "Maximum number of records to return (default: 100)"
+            }
+          ]
+        },
+        "description": "Retrieve all patient records from MongoDB database"
+      }
+    },
+    {
+      "name": "Get Patient by Conversation ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url_local}}/api/patients/{{sample_conversation_id}}",
+          "host": ["{{base_url_local}}"],
+          "path": ["api", "patients", "{{sample_conversation_id}}"]
+        },
+        "description": "Retrieve a specific patient record by conversation ID"
       }
     },
     {
