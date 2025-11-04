@@ -263,7 +263,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
-      <div className="max-w-[1920px] mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <Header
           isPolling={isPolling}
@@ -272,62 +272,9 @@ function App() {
           downloadPatientsData={downloadPatientsData}
           dbStatus={dbStatus}
         />
-
-        {/* Main Content - Split Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-180px)]">
-          {/* Left Side - Voice Agent */}
-          <div className="flex flex-col gap-6 h-full">
-            <div className="bg-white rounded-xl shadow-xl p-8 border border-gray-100 flex-1 flex flex-col items-center justify-center">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-3">
-                  Voice Registration Assistant
-                </h2>
-                <p className="text-gray-600 text-lg">
-                  Click the microphone below to start your patient registration
-                </p>
-              </div>
-
-              {/* Voice Widget Container */}
-              <div className="flex flex-col items-center justify-center flex-1 w-full">
-                <div className="mb-6 text-center">
-                  <div className="inline-flex items-center gap-3 bg-blue-50 px-6 py-3 rounded-full border border-blue-200">
-                    <div
-                      className={`w-3 h-3 rounded-full ${
-                        isConnected
-                          ? "bg-green-500 animate-pulse"
-                          : "bg-gray-400"
-                      }`}
-                    ></div>
-                    <span className="text-sm font-medium text-gray-700">
-                      {isConnected ? "Agent Ready" : "Initializing..."}
-                    </span>
-                  </div>
-                </div>
-
-                {/* ElevenLabs widget will appear here */}
-                <div className="text-gray-400 text-sm mt-8">
-                  The voice assistant widget will appear here
-                </div>
-              </div>
-
-              {/* Instructions */}
-              <div className="mt-8 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100 w-full">
-                <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-                  <span>💡</span> How to Use
-                </h3>
-                <ul className="text-sm text-gray-600 space-y-1">
-                  <li>• Click the microphone icon to start</li>
-                  <li>• Speak clearly and answer the questions</li>
-                  <li>• Your information will appear on the right</li>
-                  <li>• Data is automatically saved to the database</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side - Patient Details */}
-          <div className="flex flex-col gap-6 h-full overflow-auto">
-            {/* Status Panel */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Status Panel */}
+          <div className="lg:col-span-1">
             <StatusPanel
               isConnected={isConnected}
               isPolling={isPolling}
@@ -335,16 +282,17 @@ function App() {
               conversationData={conversationData}
               patientInfo={patientData}
             />
+          </div>
 
-            {/* Patient Information Display */}
+          {/* Patient Information Display */}
+          <div className="lg:col-span-2">
             <PatientInfo
               patientInfo={patientData}
               conversationData={conversationData}
             />
           </div>
         </div>
-
-        {/* Setup Instructions - Full Width at Bottom */}
+        {/* Setup Instructions */}
         <div className="mt-6">
           <SetupInstructions />
         </div>
