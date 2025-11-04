@@ -34,7 +34,7 @@ function App() {
 
   // Webhook endpoint configuration
   const WEBHOOK_CONFIG = {
-    pollingEndpoint: "http://localhost:8000/api/get-latest-webhook", // FastAPI backend endpoint
+    pollingEndpoint: "https://major-4w34.onrender.com/api/get-latest-webhook", // FastAPI backend endpoint
     pollingInterval: 2000, // Poll every 2 seconds
   };
 
