@@ -264,10 +264,10 @@ function App() {
           </div>
         </div>
 
-        {/* Setup Instructions */}
+        {/* Setup Instructions
         <div className="mt-6">
           <SetupInstructions />
-        </div>
+        </div> */}
       </div>
     </div>
   );
