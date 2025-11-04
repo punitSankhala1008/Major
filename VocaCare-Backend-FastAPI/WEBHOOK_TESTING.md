@@ -3,18 +3,21 @@
 ## Method 1: Python Script (Easiest) ⭐
 
 **Step 1:** Make sure your FastAPI backend is running
+
 ```powershell
 cd "e:\win 11 c folder\desktop\Major\VocaCare-Backend-FastAPI"
 python main.py
 ```
 
 **Step 2:** In a new terminal, send test webhook
+
 ```powershell
 cd "e:\win 11 c folder\desktop\Major\VocaCare-Backend-FastAPI"
 python send_test_webhook.py
 ```
 
 You should see:
+
 ```
 ✅ Webhook sent successfully!
 📥 Server Response: {"status": "success", "message": "Webhook received"}
@@ -144,24 +147,28 @@ Invoke-RestMethod -Uri "http://localhost:8000/api/get-latest-webhook"
 ## 🧪 Complete Testing Workflow
 
 ### Terminal 1 - Backend
+
 ```powershell
 cd "e:\win 11 c folder\desktop\Major\VocaCare-Backend-FastAPI"
 python main.py
 ```
 
 ### Terminal 2 - Send Webhook
+
 ```powershell
 cd "e:\win 11 c folder\desktop\Major\VocaCare-Backend-FastAPI"
 python send_test_webhook.py
 ```
 
 ### Terminal 3 - Frontend
+
 ```powershell
 cd "e:\win 11 c folder\desktop\Major\Major Frontend"
 npm run dev
 ```
 
 ### Browser
+
 1. Open: http://localhost:5173
 2. Click: **"Start Real-time"**
 3. See: Patient data appears! ✨
@@ -173,12 +180,15 @@ npm run dev
 ### Webhook not received?
 
 **Check backend is running:**
+
 ```powershell
 curl http://localhost:8000/
 ```
+
 Should return: `{"status": "running", ...}`
 
 **Check backend terminal:** You should see:
+
 ```
 ✅ Received webhook data at 2025-11-04 ...
 Conversation ID: test_conv_123
@@ -190,12 +200,13 @@ Conversation ID: test_conv_123
 2. **Check browser console** (F12) for errors
 3. **Verify polling URL** in `App.jsx`:
    ```javascript
-   pollingEndpoint: "http://localhost:8000/api/get-latest-webhook"
+   pollingEndpoint: "http://localhost:8000/api/get-latest-webhook";
    ```
 
 ### CORS errors?
 
 Make sure backend `main.py` has:
+
 ```python
 allow_origins=["http://localhost:5173", "http://localhost:3000"]
 ```
@@ -242,6 +253,7 @@ curl -X DELETE http://localhost:8000/api/clear-webhook
 ## ✅ Success Indicators
 
 You know it's working when:
+
 - ✅ Backend shows: `✅ Received webhook data`
 - ✅ Terminal shows conversation ID
 - ✅ Frontend displays patient info
