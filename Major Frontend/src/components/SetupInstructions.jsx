@@ -9,32 +9,36 @@ const SetupInstructions = () => {
       <div className="grid md:grid-cols-2 gap-6">
         <div>
           <h4 className="font-semibold text-gray-700 mb-2">
-            1. Backend Webhook Handler
+            1. Backend API Setup
           </h4>
           <div className="bg-gray-50 rounded-lg p-3 text-xs font-mono text-gray-700 overflow-x-auto">
-            <pre>{`// Create endpoint: /api/get-latest-webhook
-app.get('/api/get-latest-webhook', (req, res) => {
-  // Return latest webhook data
-  res.json(latestWebhookData);
+            <pre>{`// Webhook endpoint
+app.post('/webhook/elevenlabs', async (req, res) => {
+  // Extract patient data
+  const patientData = extractData(req.body);
+  
+  // Auto-save to MongoDB
+  await db.patients.insertOne(patientData);
+  
+  res.sendStatus(200);
 });
 
-// Receive from ElevenLabs
-app.post('/webhook/elevenlabs', (req, res) => {
-  latestWebhookData = req.body;
-  res.sendStatus(200);
+// Frontend polling endpoint
+app.get('/api/get-latest-webhook', (req, res) => {
+  res.json(latestWebhookData);
 });`}</pre>
           </div>
         </div>
 
         <div>
           <h4 className="font-semibold text-gray-700 mb-2">
-            2. MongoDB Configuration
+            2. ElevenLabs Configuration
           </h4>
           <div className="space-y-2 text-sm text-gray-600">
-            <p>✓ Enable MongoDB Data API in Atlas</p>
-            <p>✓ Create API key with permissions</p>
-            <p>✓ Update MONGODB_CONFIG in code</p>
-            <p>✓ Test connection with sample data</p>
+            <p>✅ Agent ID: agent_7601k94...</p>
+            <p>✅ Webhook URL configured</p>
+            <p>✅ Data collection enabled</p>
+            <p>✅ MongoDB auto-save active</p>
           </div>
         </div>
       </div>
@@ -43,8 +47,9 @@ app.post('/webhook/elevenlabs', (req, res) => {
         <p className="text-sm text-blue-800">
           <strong>🎯 How it works:</strong> The ElevenLabs widget handles voice
           conversations. When a call completes, ElevenLabs sends webhook data to
-          your backend. This UI polls your backend every 2 seconds to fetch the
-          latest data and automatically saves it to MongoDB.
+          your FastAPI backend at <code>https://major-4w34.onrender.com</code>.
+          The backend automatically saves patient data to MongoDB. This UI polls
+          the backend every 2 seconds to display real-time updates.
         </p>
       </div>
     </div>

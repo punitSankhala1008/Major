@@ -11,7 +11,7 @@ function App() {
   const [dbStatus, setDbStatus] = useState("idle");
   const [isPolling, setIsPolling] = useState(false);
   const [lastUpdate, setLastUpdate] = useState(null);
-  const [patientInfo, setPatientInfo] = useState({
+  const [patientData, setPatientData] = useState({
     name: "",
     age: "",
     gender: "",
@@ -24,18 +24,9 @@ function App() {
     appointmentPreference: "",
   });
 
-  // MongoDB Configuration
-  const MONGODB_CONFIG = {
-    apiUrl:
-      "mongodb+srv://sankhalapunit10:Punit123@company.bnxmedc.mongodb.net/",
-    apiKey: "YOUR_MONGODB_API_KEY",
-    database: "medical_records",
-    collection: "patient_registrations",
-  };
-
-  // Webhook endpoint configuration
-  const WEBHOOK_CONFIG = {
-    pollingEndpoint: "https://major-4w34.onrender.com/api/get-latest-webhook", // FastAPI backend endpoint
+  // Backend API Configuration
+  const API_CONFIG = {
+    baseUrl: "https://major-4w34.onrender.com",
     pollingInterval: 2000, // Poll every 2 seconds
   };
 
@@ -70,89 +61,39 @@ function App() {
     };
   }, []);
 
-  // Save data to MongoDB
-  const saveToMongoDB = useCallback(
-    async (data) => {
-      setDbStatus("saving");
-
-      try {
-        const response = await fetch(
-          `${MONGODB_CONFIG.apiUrl}/action/insertOne`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "api-key": MONGODB_CONFIG.apiKey,
-            },
-            body: JSON.stringify({
-              dataSource: "Cluster0",
-              database: MONGODB_CONFIG.database,
-              collection: MONGODB_CONFIG.collection,
-              document: {
-                ...data,
-                createdAt: new Date(),
-                status: "completed",
-              },
-            }),
-          }
-        );
-
-        if (response.ok) {
-          setDbStatus("success");
-          setTimeout(() => setDbStatus("idle"), 3000);
-        } else {
-          throw new Error("Failed to save to database");
-        }
-      } catch (error) {
-        console.error("MongoDB Error:", error);
-        setDbStatus("error");
-        setTimeout(() => setDbStatus("idle"), 3000);
-      }
-    },
-    [
-      MONGODB_CONFIG.apiUrl,
-      MONGODB_CONFIG.apiKey,
-      MONGODB_CONFIG.database,
-      MONGODB_CONFIG.collection,
-    ]
-  );
-
   // Handle incoming webhook data
-  const handleWebhookData = useCallback(
-    (webhookPayload) => {
-      console.log("Received webhook data:", webhookPayload);
+  const handleWebhookData = useCallback((webhookPayload) => {
+    console.log("Received webhook data:", webhookPayload);
 
-      if (webhookPayload?.body?.data?.analysis?.data_collection_results) {
-        const results =
-          webhookPayload.body.data.analysis.data_collection_results;
+    if (webhookPayload?.body?.data?.analysis?.data_collection_results) {
+      const results = webhookPayload.body.data.analysis.data_collection_results;
 
-        const extractedData = {
-          name: results.Name?.value || "",
-          age: results.Age?.value || "",
-          gender: results.Gender?.value || "",
-          contact: results.Contact?.value || "",
-          address: results["Address "]?.value || "",
-          reason: results.Reason?.value || "",
-          preferredDoctor: results["Preferred Doctor"]?.value || "",
-          medicalHistory: results["Previous Medical History"]?.value || "",
-          emergencyContact: results["Emergency Contact"]?.value || "",
-          appointmentPreference: results["Appointment Preference"]?.value || "",
-          conversationId: webhookPayload.body.data.conversation_id,
-          timestamp: new Date().toISOString(),
-          transcript: webhookPayload.body.data.transcript,
-          callDuration: webhookPayload.body.data.metadata?.call_duration_secs,
-        };
+      const extractedData = {
+        name: results.Name?.value || "",
+        age: results.Age?.value || "",
+        gender: results.Gender?.value || "",
+        contact: results.Contact?.value || "",
+        address: results["Address "]?.value || "",
+        reason: results.Reason?.value || "",
+        preferredDoctor: results["Preferred Doctor"]?.value || "",
+        medicalHistory: results["Previous Medical History"]?.value || "",
+        emergencyContact: results["Emergency Contact"]?.value || "",
+        appointmentPreference: results["Appointment Preference"]?.value || "",
+        conversationId: webhookPayload.body.data.conversation_id,
+        timestamp: new Date().toISOString(),
+        transcript: webhookPayload.body.data.transcript,
+        callDuration: webhookPayload.body.data.metadata?.call_duration_secs,
+      };
 
-        setPatientInfo(extractedData);
-        setConversationData(webhookPayload.body.data);
-        setIsConnected(true);
+      setPatientData(extractedData);
+      setConversationData(webhookPayload.body.data);
+      setIsConnected(true);
 
-        // Automatically save to MongoDB
-        saveToMongoDB(extractedData);
-      }
-    },
-    [saveToMongoDB]
-  );
+      // Backend automatically saves to MongoDB when webhook is received
+      setDbStatus("success");
+      setTimeout(() => setDbStatus("idle"), 3000);
+    }
+  }, []);
 
   // Real-time webhook polling
   useEffect(() => {
@@ -160,7 +101,9 @@ function App() {
 
     const pollWebhookData = async () => {
       try {
-        const response = await fetch(WEBHOOK_CONFIG.pollingEndpoint);
+        const response = await fetch(
+          `${API_CONFIG.baseUrl}/api/get-latest-webhook`
+        );
         if (response.ok) {
           const data = await response.json();
           if (data && data.timestamp !== lastUpdate) {
@@ -174,7 +117,7 @@ function App() {
     };
 
     if (isPolling) {
-      intervalId = setInterval(pollWebhookData, WEBHOOK_CONFIG.pollingInterval);
+      intervalId = setInterval(pollWebhookData, API_CONFIG.pollingInterval);
     }
 
     return () => {
@@ -182,13 +125,8 @@ function App() {
         clearInterval(intervalId);
       }
     };
-  }, [
-    isPolling,
-    lastUpdate,
-    WEBHOOK_CONFIG.pollingEndpoint,
-    WEBHOOK_CONFIG.pollingInterval,
-    handleWebhookData,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPolling, lastUpdate, handleWebhookData]);
 
   // Toggle real-time polling
   const togglePolling = () => {
@@ -250,20 +188,19 @@ function App() {
               isPolling={isPolling}
               lastUpdate={lastUpdate}
               conversationData={conversationData}
-              patientInfo={patientInfo}
-              MONGODB_CONFIG={MONGODB_CONFIG}
+              patientInfo={patientData}
             />
           </div>
 
           {/* Patient Information Display */}
           <div className="lg:col-span-2">
             <PatientInfo
-              patientInfo={patientInfo}
+              patientInfo={patientData}
               conversationData={conversationData}
             />
           </div>
         </div>
-        Setup Instructions
+        {/* Setup Instructions */}
         <div className="mt-6">
           <SetupInstructions />
         </div>

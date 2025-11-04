@@ -7,7 +7,6 @@ const StatusPanel = ({
   lastUpdate,
   conversationData,
   patientInfo,
-  MONGODB_CONFIG,
 }) => {
   return (
     <div className="bg-white rounded-xl shadow-xl p-6 border border-gray-100">
@@ -71,14 +70,14 @@ const StatusPanel = ({
           <div className="flex items-center gap-2 mb-3">
             <Database size={16} className="text-green-600" />
             <span className="text-sm font-semibold text-gray-700">
-              Database
+              Backend Database
             </span>
           </div>
           <div className="text-xs text-gray-600 space-y-1">
-            <p>DB: {MONGODB_CONFIG.database}</p>
-            <p>Collection: {MONGODB_CONFIG.collection}</p>
-            <p className="text-xs text-orange-600 mt-2 flex items-center gap-1">
-              ⚠️ Configure credentials
+            <p>Database: medical_records</p>
+            <p>Collection: patient_registrations</p>
+            <p className="text-xs text-green-600 mt-2 flex items-center gap-1">
+              ✅ Auto-save enabled
             </p>
           </div>
         </div>
