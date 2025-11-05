@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import StatusPanel from "./components/StatusPanel";
 import PatientInfo from "./components/PatientInfo";
 import SetupInstructions from "./components/SetupInstructions";
+import LiveKitVoiceAgent from "./components/LiveKitVoiceAgent";
 
 function App() {
   const [isConnected, setIsConnected] = useState(false);
@@ -23,6 +24,7 @@ function App() {
     emergencyContact: "",
     appointmentPreference: "",
   });
+  const [voiceAgentType, setVoiceAgentType] = useState("livekit"); // "elevenlabs" or "livekit"
 
   // Backend API Configuration
   const API_CONFIG = {
@@ -49,7 +51,7 @@ function App() {
     // Create the widget element
     if (!document.querySelector("elevenlabs-convai")) {
       const widget = document.createElement("elevenlabs-convai");
-      widget.setAttribute("agent-id", "agent_7601k94ncjtge2s91yvv72k9zc27");
+      widget.setAttribute("agent-id", "agent_0201k9as34shfd5807dptt2fsvbb");
       document.body.appendChild(widget);
     }
 
@@ -298,6 +300,50 @@ function App() {
           <SetupInstructions />
         </div>
       </div>
+
+      {/* Voice Agent Toggle - Floating Button */}
+      <div className="fixed bottom-6 left-6 z-50">
+        <div className="bg-white rounded-2xl shadow-2xl p-4 border-2 border-indigo-200">
+          <p className="text-xs font-semibold text-gray-600 mb-2 text-center">
+            Voice Agent
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setVoiceAgentType("livekit")}
+              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                voiceAgentType === "livekit"
+                  ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              LiveKit AI
+            </button>
+            <button
+              onClick={() => setVoiceAgentType("elevenlabs")}
+              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                voiceAgentType === "elevenlabs"
+                  ? "bg-gradient-to-r from-purple-500 to-pink-600 text-white shadow-lg"
+                  : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              }`}
+            >
+              ElevenLabs
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* LiveKit Voice Agent */}
+      {voiceAgentType === "livekit" && (
+        <LiveKitVoiceAgent
+          onCallComplete={() => {
+            console.log("LiveKit call completed");
+            // Trigger polling to get new data
+            if (!isPolling) {
+              togglePolling();
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

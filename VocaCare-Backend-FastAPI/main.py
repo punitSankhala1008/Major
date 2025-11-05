@@ -5,6 +5,8 @@ import uvicorn
 from typing import Optional
 from dotenv import load_dotenv
 from database import patient_registrations
+import os
+
 load_dotenv()
 app = FastAPI(title="VocaCare Backend API", version="1.0.0")
 
@@ -13,6 +15,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
+        "http://localhost:5174",
         "http://localhost:3000",
         "http://localhost:8000",
         "https://major-4w34.onrender.com",
@@ -94,6 +97,35 @@ async def receive_webhook(request: Request):
     
     except Exception as e:
         print(f"❌ Error processing webhook: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+
+@app.post("/webhook/livekit")
+async def receive_livekit_webhook(request: Request):
+    """
+    Receives webhook data from LiveKit AI Agent
+    Similar to ElevenLabs webhook but for LiveKit
+    """
+    global latest_webhook_data
+    
+    try:
+        # Get the webhook payload
+        payload = await request.json()
+        
+        # Add timestamp to the data
+        latest_webhook_data = {
+            "body": payload,
+            "timestamp": int(datetime.now().timestamp() * 1000),
+            "source": "livekit"
+        }
+        
+        print(f"✅ Received LiveKit webhook data at {datetime.now()}")
+        print(f"Conversation ID: {payload.get('data', {}).get('conversation_id', 'N/A')}")
+        
+        return {"status": "success", "message": "LiveKit webhook received"}
+    
+    except Exception as e:
+        print(f"❌ Error processing LiveKit webhook: {str(e)}")
         return {"status": "error", "message": str(e)}
 
 
@@ -194,10 +226,65 @@ async def get_stats():
         }
 
 
+@app.post("/api/livekit-token")
+async def generate_livekit_token(request: Request):
+    """Generate LiveKit access token for voice agent connection"""
+    try:
+        from livekit import api
+        
+        body = await request.json()
+        room_name = body.get("room_name", f"vocare_room_{int(datetime.now().timestamp())}")
+        participant_name = body.get("participant_name", "Patient")
+        
+        # Get LiveKit credentials from environment
+        livekit_url = os.getenv("LIVEKIT_URL")
+        livekit_api_key = os.getenv("LIVEKIT_API_KEY")
+        livekit_api_secret = os.getenv("LIVEKIT_API_SECRET")
+        
+        if not all([livekit_url, livekit_api_key, livekit_api_secret]):
+            return {
+                "status": "error",
+                "message": "LiveKit credentials not configured. Please set LIVEKIT_URL, LIVEKIT_API_KEY, and LIVEKIT_API_SECRET in .env file"
+            }
+        
+        # Create access token
+        token = api.AccessToken(livekit_api_key, livekit_api_secret)
+        token.with_identity(participant_name)
+        token.with_name(participant_name)
+        token.with_grants(api.VideoGrants(
+            room_join=True,
+            room=room_name,
+            can_publish=True,
+            can_subscribe=True,
+        ))
+        
+        jwt_token = token.to_jwt()
+        
+        return {
+            "status": "success",
+            "token": jwt_token,
+            "url": livekit_url,
+            "room_name": room_name
+        }
+        
+    except ImportError:
+        return {
+            "status": "error",
+            "message": "LiveKit SDK not installed. Run: pip install livekit"
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "message": f"Failed to generate LiveKit token: {str(e)}"
+        }
+
+
 if __name__ == "__main__":
     print("🚀 Starting VocaCare FastAPI Backend...")
     print("📡 Webhook endpoint: http://localhost:8000/webhook/elevenlabs")
-    print("🔄 Polling endpoint: http://localhost:8000/api/get-latest-webhook")
+    print("� LiveKit webhook: http://localhost:8000/webhook/livekit")
+    print("�🔄 Polling endpoint: http://localhost:8000/api/get-latest-webhook")
+    print("🎤 LiveKit token: http://localhost:8000/api/livekit-token")
     print("📊 API Docs: http://localhost:8000/docs")
     
     uvicorn.run(
@@ -206,3 +293,4 @@ if __name__ == "__main__":
         port=8000,
         reload=True  # Auto-reload on code changes
     )
+
