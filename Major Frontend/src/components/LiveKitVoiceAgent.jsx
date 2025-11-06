@@ -103,12 +103,12 @@ const LiveKitVoiceAgent = ({ onCallComplete }) => {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50">
-      <div className="bg-white rounded-2xl shadow-2xl p-6 border-2 border-blue-200 max-w-sm">
+    <div className="w-full h-full">
+      <div className="h-full flex flex-col">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <Phone size={20} className="text-blue-600" />
-            VocaCare Voice AI
+          <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+            <Phone size={24} className="text-blue-600" />
+            LiveKit Voice AI
           </h3>
         </div>
 
@@ -119,51 +119,75 @@ const LiveKitVoiceAgent = ({ onCallComplete }) => {
         )}
 
         {!isConnected ? (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-600">
-              Click to start your patient registration with our AI assistant
-            </p>
+          <div className="space-y-4 flex flex-col items-center justify-center flex-1">
+            <div className="text-center mb-6">
+              <div className="w-24 h-24 mx-auto mb-4 bg-blue-100 rounded-full flex items-center justify-center">
+                <Phone size={48} className="text-blue-600" />
+              </div>
+              <p className="text-lg text-gray-700 font-medium mb-2">
+                Ready to start your registration?
+              </p>
+              <p className="text-sm text-gray-500">
+                Click below to connect with our AI voice assistant
+              </p>
+            </div>
             <button
               onClick={connectToLiveKit}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-lg hover:from-blue-600 hover:to-indigo-700 transition-all font-medium flex items-center justify-center gap-2"
+              className="px-8 py-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all font-semibold text-lg flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
             >
-              <Phone size={20} />
+              <Phone size={24} />
               Start Call
             </button>
           </div>
         ) : (
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-green-600">
+          <div className="space-y-6 flex flex-col flex-1">
+            <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl border-2 border-green-200">
+              <div className="w-4 h-4 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-base font-semibold text-green-700">
                 Connected - Listening...
               </span>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex-1 flex items-center justify-center">
+              <div className="text-center">
+                <div className="w-32 h-32 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center animate-pulse">
+                  <Mic
+                    size={64}
+                    className={isMuted ? "text-gray-400" : "text-green-600"}
+                  />
+                </div>
+                <p className="text-gray-600 text-sm">
+                  {isMuted
+                    ? "Microphone is muted"
+                    : "Speak clearly and naturally"}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
               <button
                 onClick={toggleMute}
-                className={`flex-1 px-4 py-3 rounded-lg font-medium flex items-center justify-center gap-2 transition-all ${
+                className={`flex-1 px-6 py-4 rounded-xl font-semibold text-base flex items-center justify-center gap-2 transition-all ${
                   isMuted
-                    ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200"
-                    : "bg-blue-100 text-blue-700 hover:bg-blue-200"
+                    ? "bg-yellow-100 text-yellow-700 hover:bg-yellow-200 border-2 border-yellow-300"
+                    : "bg-blue-100 text-blue-700 hover:bg-blue-200 border-2 border-blue-300"
                 }`}
               >
-                {isMuted ? <MicOff size={20} /> : <Mic size={20} />}
+                {isMuted ? <MicOff size={24} /> : <Mic size={24} />}
                 {isMuted ? "Unmute" : "Mute"}
               </button>
 
               <button
                 onClick={disconnect}
-                className="flex-1 px-4 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all font-medium flex items-center justify-center gap-2"
+                className="flex-1 px-6 py-4 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all font-semibold text-base flex items-center justify-center gap-2 shadow-lg hover:shadow-xl"
               >
-                <PhoneOff size={20} />
+                <PhoneOff size={24} />
                 End Call
               </button>
             </div>
 
-            <p className="text-xs text-gray-500 text-center">
-              Speak clearly. The AI will guide you through registration.
+            <p className="text-xs text-gray-500 text-center bg-gray-50 p-3 rounded-lg">
+              💡 The AI will guide you through the registration process
             </p>
           </div>
         )}
