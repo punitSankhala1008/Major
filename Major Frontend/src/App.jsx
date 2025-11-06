@@ -514,7 +514,7 @@ function App() {
             <div className="bg-white rounded-2xl shadow-lg p-6 border-2 border-purple-200 flex flex-col min-h-[700px] h-full">
               <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2 flex-shrink-0">
                 <span className="text-2xl">🎤</span>
-                ElevenLabs Voice Agent
+                VocaCare Voice Agent
               </h2>
               {!showElevenLabsWidget ? (
                 <div className="flex flex-col items-center justify-center flex-1 space-y-6">
