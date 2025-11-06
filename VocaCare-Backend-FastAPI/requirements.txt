@@ -5,8 +5,8 @@ pymongo
 pydantic
 requests
 motor
-livekit
-livekit-agents
-livekit-plugins-openai
-livekit-plugins-deepgram
-livekit-plugins-silero
+# livekit
+# livekit-agents
+# livekit-plugins-openai
+# livekit-plugins-deepgram
+# livekit-plugins-silero
